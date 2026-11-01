@@ -1,0 +1,16 @@
+# Arduino / Visual Micro build artifacts
+__vm/
+build/
+*.hex
+*.bin
+*.elf
+
+# IDE clutter
+.vs/
+.vscode/
+*.suo
+*.user
+
+# OS clutter
+Thumbs.db
+desktop.ini

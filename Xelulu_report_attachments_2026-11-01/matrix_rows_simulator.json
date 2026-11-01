@@ -1,0 +1,198 @@
+[
+  {
+    "table": "cloud->device",
+    "row": "say",
+    "expected": "Ack done or accepted",
+    "status": "Pass",
+    "evidence": "JltoqMGcw1-wsj9DiLavRA · accepted · ack_result · seq 213 · xlu_000123 · 2026-11-01T17:03:53.259Z"
+  },
+  {
+    "table": "cloud->device",
+    "row": "animate",
+    "expected": "Ack done or accepted",
+    "status": "Pass",
+    "evidence": "7ZNBkKrfzZp3LXEPdxXQNQ · accepted · ack_result · seq 218 · xlu_000123 · 2026-11-01T17:03:53.586Z"
+  },
+  {
+    "table": "cloud->device",
+    "row": "gesture",
+    "expected": "Ack done or accepted",
+    "status": "Pass",
+    "evidence": "4SrTJ8PAowpUXBFp2GZX5g · done · ack_result · seq 225 · xlu_000123 · 2026-11-01T17:03:53.914Z"
+  },
+  {
+    "table": "cloud->device",
+    "row": "move",
+    "expected": "Refusal (not allow-listed)",
+    "status": "Pass",
+    "evidence": "action_refused · action_not_allowed"
+  },
+  {
+    "table": "cloud->device",
+    "row": "play",
+    "expected": "Ack done or accepted",
+    "status": "Pass",
+    "evidence": "fxK_-_V5pPDwnEn-YYfVAQ · done · ack_result · seq 235 · xlu_000123 · 2026-11-01T17:03:54.546Z"
+  },
+  {
+    "table": "cloud->device",
+    "row": "set_mode",
+    "expected": "Refusal (not allow-listed)",
+    "status": "Pass",
+    "evidence": "action_refused · action_not_allowed"
+  },
+  {
+    "table": "cloud->device",
+    "row": "led",
+    "expected": "Ack done or accepted",
+    "status": "Pass",
+    "evidence": "1mBE6jQVf5MT5P1ER85R1w · accepted · ack_result · seq 238 · xlu_000123 · 2026-11-01T17:04:02.037Z"
+  },
+  {
+    "table": "cloud->device",
+    "row": "volume",
+    "expected": "Refusal (not allow-listed)",
+    "status": "Pass",
+    "evidence": "action_refused · action_not_allowed"
+  },
+  {
+    "table": "cloud->device",
+    "row": "config",
+    "expected": "Refusal (not allow-listed)",
+    "status": "Pass",
+    "evidence": "action_refused · action_not_allowed"
+  },
+  {
+    "table": "cloud->device",
+    "row": "stop_audio",
+    "expected": "Refusal (not allow-listed)",
+    "status": "Pass",
+    "evidence": "action_refused · action_not_allowed"
+  },
+  {
+    "table": "cloud->device",
+    "row": "ota",
+    "expected": "Refusal (not allow-listed)",
+    "status": "Pass",
+    "evidence": "action_refused · action_not_allowed"
+  },
+  {
+    "table": "device->cloud",
+    "row": "touch",
+    "expected": "Device · event",
+    "status": "Pass",
+    "evidence": "event_accepted · seq 242 · xlu_000123 · 2026-11-01T17:04:02.098Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "wake",
+    "expected": "Device · event",
+    "status": "Pass",
+    "evidence": "event_accepted · seq 256 · xlu_000123 · 2026-11-01T17:04:03.643Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "cry",
+    "expected": "Device · event",
+    "status": "Pass",
+    "evidence": "event_accepted · seq 258 · xlu_000123 · 2026-11-01T17:04:03.859Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "motion",
+    "expected": "Device · event",
+    "status": "Pass",
+    "evidence": "event_accepted · seq 260 · xlu_000123 · 2026-11-01T17:04:04.071Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "button",
+    "expected": "Device · event",
+    "status": "Pass",
+    "evidence": "event_accepted · seq 262 · xlu_000123 · 2026-11-01T17:04:04.299Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "nfc",
+    "expected": "Device · event",
+    "status": "Pass",
+    "evidence": "event_accepted · seq 264 · xlu_000123 · 2026-11-01T17:04:04.513Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "interrupt",
+    "expected": "Device · event",
+    "status": "Pass",
+    "evidence": "event_accepted · seq 266 · xlu_000123 · 2026-11-01T17:04:04.732Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "error",
+    "expected": "Device · event",
+    "status": "Pass",
+    "evidence": "event_accepted · seq 268 · xlu_000123 · 2026-11-01T17:04:04.943Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "head",
+    "expected": "Device · zone",
+    "status": "Pass",
+    "evidence": "event_accepted · seq 242 · xlu_000123 · 2026-11-01T17:04:02.098Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "left_ear",
+    "expected": "Device · zone",
+    "status": "Pass",
+    "evidence": "event_accepted · seq 244 · xlu_000123 · 2026-11-01T17:04:02.308Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "right_ear",
+    "expected": "Device · zone",
+    "status": "Pass",
+    "evidence": "event_accepted · seq 246 · xlu_000123 · 2026-11-01T17:04:02.515Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "belly",
+    "expected": "Device · zone",
+    "status": "Pass",
+    "evidence": "event_accepted · seq 248 · xlu_000123 · 2026-11-01T17:04:02.785Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "back",
+    "expected": "Device · zone",
+    "status": "Pass",
+    "evidence": "event_accepted · seq 250 · xlu_000123 · 2026-11-01T17:04:03.003Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "left_hand",
+    "expected": "Device · zone",
+    "status": "Pass",
+    "evidence": "event_accepted · seq 252 · xlu_000123 · 2026-11-01T17:04:03.223Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "right_hand",
+    "expected": "Device · zone",
+    "status": "Pass",
+    "evidence": "event_accepted · seq 254 · xlu_000123 · 2026-11-01T17:04:03.407Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "audio_turn",
+    "expected": "Device · fixed",
+    "status": "Pass",
+    "evidence": "t_f1sT6Ec8yCBVhRcKVarPmw · audio_turn · seq 286 · xlu_000123 · 2026-11-01T17:04:08.786Z"
+  },
+  {
+    "table": "device->cloud",
+    "row": "safety_refusal",
+    "expected": "Device · fixed",
+    "status": "Pass",
+    "evidence": "kyNig1wzc7eYcbLUpX6TSA · rejected · picked_up · ack_result · seq 210 · xlu_000123 · 2026-11-01T17:03:52.984Z"
+  }
+]

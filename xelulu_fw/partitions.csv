@@ -1,0 +1,12 @@
+# Xelulu 16 MB layout (FW-SOT §3.4, adapted to the Arduino upload recipe, which
+# hard-codes otadata at 0xe000 and the app at 0x10000). model holds ESP-SR's
+# srmodels.bin (3,340,296 B in core 3.3.10, so 3 MB is too small). "content" is the
+# LittleFS partition (clips, fallback phrases, default cue files): mount it by label.
+# Name,   Type, SubType,  Offset,   Size
+nvs,      data, nvs,      0x9000,   0x5000,
+otadata,  data, ota,      0xe000,   0x2000,
+ota_0,    app,  ota_0,    0x10000,  0x400000,
+ota_1,    app,  ota_1,    0x410000, 0x400000,
+model,    data, spiffs,   0x810000, 0x330000,
+content,  data, spiffs,   0xB40000, 0x4B0000,
+coredump, data, coredump, 0xFF0000, 0x10000,

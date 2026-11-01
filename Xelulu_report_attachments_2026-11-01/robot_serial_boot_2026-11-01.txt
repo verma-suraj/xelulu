@@ -1,0 +1,88 @@
+﻿>> reboot
+saved - rebooting
+E (432475) transport_base: tcp_read error, errno=Software caused connection abort
+E (432476) mqtt_client: esp_mqtt_handle_transport_read_error: transport_read() error: errno=113
+[wifi] down
+E (432480) mqtt_client: mqtt_process_receive: mqtt_message_receive() returned -2
+[wire] broker disconnected
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x18 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037b4fa
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x10cc
+load:0x403c8700,len:0xc2c
+load:0x403cb700,len:0x30c0
+entry 0x403c88b8
+Xelulu fw 0.2.0  FW-SOT 1.2  proto_ver 2  reset 3
+[cal] no valid blob in NVS: using Config.h defaults
+[face] ST7789 320x240, canvas 240x240 zoom 1.50, DMA on
+face 1 SMILE
+[audio] I2S0 mics + I2S1 speaker at 16 kHz
+[turn] ready, audio url ws://10.171.191.241:8081
+[touch] baselines: head=704 back=704 belly=704 left_hand=704 right_hand=704  (hands not fitted)
+[imu] mount not calibrated: run `cal imu` with the robot upright and still
+[sense] MPR121 ok, MPU6050 ok, BMP180 present (unused), HMC5883L not used
+[tof] CH1 not answering at 0x29: check SDA/SCL/VIN, and XSHUT not pulled low
+[tof] CH2 not answering at 0x29: check SDA/SCL/VIN, and XSHUT not pulled low
+[tof] CH3 not answering at 0x29: check SDA/SCL/VIN, and XSHUT not pulled low
+[tof] 1 sensors see a floor < 100 mm (expected 2): robot not on the floor? using the stored map
+[tof] front=CH0(ok) rear=CH1(MISSING)[fault] + tof_rear_missing
+ cliff-front=CH2(MISSING)[fault] + cliff_front_missing
+ cliff-rear=CH3(MISSING)[fault] + cliff_rear_missing
+ floor 60/60 mm (front/rear unlabelled: run `cal tof`)
+[servo] USB console plugged in: servo bus OFF (it shares GPIO 19/20). Unplug USB + reboot for the servos
+[fault] + servo_1_missing
+[servo] 1 (head pan) MISSING
+[fault] + servo_2_missing
+[servo] 2 (left arm) MISSING
+[fault] + servo_3_missing
+[servo] 3 (right arm) MISSING
+[id] device_id=xlu_000123 fw_ver=0.2.0 pairing=3S88MF token=set proto_ver=2 FW-SOT=1.2
+face 1 SMILE
+[boot] SMILE, hello, stretch -> wave
+[body] stretch (4 kf)
+[imu] up captured at boot (0.28,0.94,0.18) - `cal imu` makes it permanent
+[wifi] up 10.171.191.202 rssi -36
+[wire] hello acked, status sent, replaying 6 queued event(s)
+[wire] ev error tof_rear_missing id=ev_Tq5uLut3vYUpng9d1TEiBA puback 54 ms
+[wire] ev error cliff_front_missing id=ev_wCXQvmZPzruJlqtF4_Wziw puback 6 ms
+[wire] ev error cliff_rear_missing id=ev_lZjPWosC5dHgJOjVY5GkKw puback 7 ms
+[wire] ev error servo_1_missing id=ev_dKsGZOwW8qpGAdoZ5CRxYQ puback 7 ms
+[wire] ev error servo_2_missing id=ev_wMppABvs_KLY29k67HiB8A puback 6 ms
+[wire] ev error servo_3_missing id=ev_jfm1w6UKP6b6dZ1hffKJ_w puback 6 ms
+[body] stretch done 3100 ms ok err HP 0.0 AL 0.0 AR 0.0 deg
+[body] wave (6 kf)
+[body] wave done 1920 ms ok err HP 0.0 AL 0.0 AR 0.0 deg
+[body] glance (4 kf)
+[body] glance done 1800 ms ok err HP 0.0 AL 0.0 AR 0.0 deg
+[fault] + mic_silent
+[wire] ev error mic_silent id=ev_lMf7dpQvz9bcdyqfp6Dmxw puback 6 ms
+[fault] - mic_silent
+[body] glance (4 kf)
+[body] glance done 1800 ms ok err HP 0.0 AL 0.0 AR 0.0 deg
+[fault] + mic_silent
+[react] in=idle:fidget  face=28 CHEEKY TONGUE  motion=CHEEKY(4kf)  snd=none  glow=none
+[body] CHEEKY (4 kf)
+face 28 CHEEKY TONGUE
+[body] CHEEKY done 981 ms ok err HP 0.0 AL 0.0 AR 0.0 deg
+[fault] - mic_silent
+face 1 SMILE
+[body] glance (4 kf)
+>> fw
+device_id xlu_000123  fw_ver 0.2.0  proto_ver 2  FW-SOT 1.2  pairing 3S88MF  token set
+partition ota_0  heap 98148 (min 91612)  PSRAM 7996484 free of 8388608  reset 3  uptime 39s
+[body] glance done 1800 ms ok err HP 0.0 AL 0.0 AR 0.0 deg
+[fault] + mic_silent
+[fault] - mic_silent
+>> net
+wifi up (internet) rssi -52 | mqtt ready (mqtt://10.171.191.241:1883) | clock 1793558015 | queue 0 in flight -1
+[body] glance (4 kf)
+>> faults
+faults: tof_rear_missing cliff_front_missing cliff_rear_missing servo_1_missing servo_2_missing servo_3_missing
+[body] glance done 1820 ms ok err HP 0.0 AL 0.0 AR 0.0 deg
+>> selftest wire
+selftest wire: 52/52 passed - contract OK
+[body] glance (4 kf, mirrored)
+[body] glance done 1800 ms ok err HP 0.0 AL 0.0 AR 0.0 deg

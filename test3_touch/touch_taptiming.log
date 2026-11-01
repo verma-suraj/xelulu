@@ -1,0 +1,26 @@
+# touch_screen, slow falling filter, thr {21,24,12}, COM10, 2026-10-31, tap timing. cols: ms sigHEAD sigBACK sigBELLY st
+[touch] 3423 ms HEAD off (signal -4)
+[touch] 3472 ms BACK off (signal -12)
+[touch] 3520 ms BELLY off (signal -19)
+18190 6 -3 -3 0
+[touch] 18212 ms HEAD ON (signal 21)
+18212 21 -3 -3 1
+18218 26 -3 -3 1
+18224 28 -3 -3 1
+18230 28 -3 -3 1
+18236 27 -4 -4 1
+18242 29 -3 -3 1
+18248 27 -3 -3 1
+18254 26 -3 -3 1
+18260 26 -3 -3 1
+18266 27 -3 -3 1
+18272 21 -3 -3 1
+18278 16 -3 -3 1
+18284 11 -2 -3 1
+[touch] 18306 ms HEAD off (signal 6)
+18306 6 -2 -3 0
+18559 3 -3 -3 0
+[touch] 18581 ms HEAD ON (signal 29)
+18581 29 -3 -3 1
+18684 25 -3 -3 1
+[touch] 18706 ms HEAD off (signal -1)
