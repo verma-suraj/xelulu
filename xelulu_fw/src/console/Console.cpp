@@ -21,7 +21,7 @@ static const char HELP[] =
   "glow ears|cheeks|belly #RRGGBB solid|pulse|rainbow PCT\n"
   "rail | touch raw | imu raw | tof raw | mic level | (repeat to stop a dump)\n"
   "cal show|save|reset | cal set KNOB VALUES.. | cal servo N center | cal imu | cal tof | cal rail\n"
-  "wifi SSID PASS (\"quote\" one with spaces) | id DEVICE_ID TOKEN | url MQTT_URL AUDIO_URL   (saved, then reboot)\n"
+  "wifi SSID PASS (\"quote\" one with spaces) | id DEVICE_ID TOKEN | url PC_IP | url MQTT_URL AUDIO_URL   (saved, then reboot)\n"
   "set movement on|off | set volume N | set quiet HH:MM HH:MM | set quiet off\n"
   "fw | net | state | faults | selftest wire | selftest load | turn test | reboot\n";
 
@@ -151,8 +151,7 @@ static void run(char* line, uint32_t now) {
     settingsSave(); reboot();
   }
   if (!strcmp(cmd, "url") && a) {
-    strlcpy(settings.mqttUrl, a, sizeof settings.mqttUrl);
-    strlcpy(settings.audioUrl, b ? b : "", sizeof settings.audioUrl);
+    if (!settingsServer(a, b ? b : "")) { Serial.println("url PC_IP   or   url mqtt://HOST:PORT ws://HOST:PORT"); return; }
     settingsSave(); reboot();
   }
   if (!strcmp(cmd, "set") && a && b) {

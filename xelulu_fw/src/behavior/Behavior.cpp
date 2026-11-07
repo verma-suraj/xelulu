@@ -567,6 +567,12 @@ void behaviorLoop(uint32_t now) {
   turnEvents(now);
   for (Pending& p : pend)                                // say fallback: done after its duration
     if (p.used && p.doneAt && (int32_t)(now - p.doneAt) >= 0) { netAck(p.cmdId, ACK_DONE); p.used = false; }
+  if (otaRunning() && faceCurrent() != FACE_UPDATING && pendingFace != FACE_UPDATING) {   // a Wi-Fi upload began
+    bodyDrive(DM_STOP, 0, 0, 0, false, 0);              // flash writes stall the body task: nothing may be moving
+    react("ota:wifi", FACE_UPDATING, NO_MOTION, S_NONE, nullptr,
+          {GR_BELLY, RGB_GREEN, GFX_SOLID, 20, 0, 0, 0, "belly:green 20%"}, 0, 600000);
+    bodyMotion(MOT_FACE(FACE_UPDATING), P_SAFETY);     // servos hold, then limp
+  }
   if (!otaRunning() && faceCurrent() == FACE_UPDATING) { glowClear(GR_BELLY); bodyWake(); moodEnd(); }
 
   if (pendingFace < FACE_COUNT && (int32_t)(now - pendingAt) >= 0) { faceSet(pendingFace); pendingFace = FACE_COUNT; }

@@ -9,9 +9,21 @@
 #pragma once
 #include <stdint.h>
 
-#define FW_VER       "0.2.0"   // MAJOR.MINOR.PATCH, bump on every build that goes to the matrix (0.2.0: first as-built port)
+#define FW_VER       "0.3.0"   // MAJOR.MINOR.PATCH, bump on every build that goes to the matrix (0.3.0: Wi-Fi setup page + OTA over Wi-Fi)
 #define FW_SOT_VER   "1.2"     // the FW-SOT revision this firmware implements
 #define CAL_VERSION  1         // bump when Cal's layout changes: older blobs load as defaults
+
+// ---- Network: what a freshly flashed robot joins and connects to ----
+// Fill these in before flashing, or leave them "" and set them on the robot's own setup page:
+// when no Wi-Fi works for 30 s it opens a hotspot named xelulu-xxxxxx (see FLASHING.md).
+// A reflash with CHANGED values here overwrites what the robot saved; the same values again
+// keep whatever was set later on the console or the setup page.
+#define NET_WIFI_SSID     ""                              // 2.4 GHz only
+#define NET_WIFI_PASS     ""
+#define NET_SERVER        ""                              // the stack PC's LAN IP (ipconfig), e.g. "192.168.1.50"
+#define NET_DEVICE_ID     "xlu_000123"                    // = DEVICE_ID of the stack
+#define NET_DEVICE_TOKEN  "dev_local_only_not_a_secret"   // = DEVICE_TOKEN of the stack (its dev placeholder)
+#define NET_ADMIN_PASS    "xelulu123"                     // setup hotspot, web page (user xelulu), Arduino IDE network upload
 
 // Joint indices (§7.0): head pan, left arm, right arm. SC09 bus ID = index + 1.
 enum Joint : uint8_t { HP, AL, AR, JOINTS };
@@ -74,10 +86,10 @@ struct Cal {
   // ---- Servos: 3x SC09 (§7.1) ----
   uint8_t  jointFitted = 0x07;      // bit per Joint
   uint8_t  servoBusPins = 0;        // 0 auto, 1 = GPIO 43/44, 2 = GPIO 38/47
-  int16_t  center[JOINTS] = {512, 512, 512};    // counts at angle 0
+  int16_t  center[JOINTS] = {202, 512, 512};    // counts at angle 0. Head: straight ahead, measured with test1 2026-11-02
   int8_t   dir[JOINTS] = {1, 1, -1};            // arms are mirror images
-  int16_t  softMin[JOINTS] = {-60, -10, -10};
-  int16_t  softMax[JOINTS] = {60, 150, 150};
+  int16_t  softMin[JOINTS] = {-21, -10, -10};   // head: 8 deg inside its end stops (counts 102 / 498), as test12
+  int16_t  softMax[JOINTS] = {78, 150, 150};    // ponytail: arms not measured yet (test1), still the -10..150 guess
   int16_t  speedCap[JOINTS] = {300, 400, 400};  // deg/s
   int16_t  accCap[JOINTS] = {2000, 3000, 3000}; // deg/s^2
   uint8_t  torqueNormal[JOINTS] = {50, 50, 50};    // % of stall; written to the servo's max torque

@@ -10,6 +10,7 @@
 #include "esp_sntp.h"
 #include "esp_crt_bundle.h"
 #include "esp_random.h"
+#include "esp_mac.h"
 
 // ===========================================================================
 // clock (§4.4): until the first SNTP sync since boot, ts = last saved epoch +
@@ -50,7 +51,9 @@ static void clockBegin() {
 // ===========================================================================
 static char tStatus[64], tEvent[64], tCmd[64], tAck[64];
 static char pairing[7];
+static char host[16];
 const char* netPairingCode() { return pairing; }
+const char* netHost() { return host; }
 
 static void makeId(char* out, const char* prefix) {
   uint8_t r[16];
@@ -264,8 +267,18 @@ static void onMqtt(void*, esp_event_base_t, int32_t id, void* data) {
 // ===========================================================================
 static int subId = -1, helloId = -1;
 static uint8_t fails = 0;
+static uint8_t quickDrops = 0;          // links lost < 30 s after hello, in a row: someone else uses our client id
 static bool authRefused = false, started = false;
-static uint32_t nextAttempt = 0, lastStatus = 0;
+static uint32_t nextAttempt = 0, lastStatus = 0, readyAt = 0;
+
+const char* netLinkName() {
+  if (!client) return "no server set";
+  if (authRefused) return "token refused";
+  if (linkState == L_READY) return "connected";
+  if (quickDrops >= 2) return "kicked off";       // the stack's simulator connects as the same device id
+  static const char* const LN[] = {"no answer", "connecting", "subscribing", "hello sent"};
+  return linkState == L_DOWN && !fails ? "connecting" : LN[linkState];
+}
 
 static void scheduleRetry(uint32_t now) {
   // 1 -> 2 -> 4 -> 8 -> 16 -> 30 s, +-20 % jitter; a refused token waits 60 s (no tight loop, Doc C §2.1)
@@ -308,6 +321,7 @@ static void onNetEvent(const NetEv& ev, uint32_t now) {
       if (ev.msgId == helloId && linkState == L_HELLO) {   // 4. status now and every 15 s; 5. replay
         linkState = L_READY;
         S.mqttUp = true;
+        readyAt = now;
         sendStatus();
         Serial.printf("[wire] hello acked, status sent, replaying %u queued event(s)\n", qCount);
         otaMarkValid();                 // a new image is good once hello + status work (§13.4)
@@ -323,6 +337,10 @@ static void onNetEvent(const NetEv& ev, uint32_t now) {
       }
       break;
     case MQTT_EVENT_DISCONNECTED:
+      if (linkState == L_READY) {
+        quickDrops = now - readyAt < 30000 ? min(quickDrops + 1, 255) : 0;
+        if (quickDrops >= 2) Serial.println("[wire] dropped again soon after hello: another client uses this device id (stop the stack's simulator)");
+      }
       if (linkState >= L_SUBSCRIBING) Serial.println("[wire] broker disconnected");
       linkState = L_DOWN;
       S.mqttUp = false;
@@ -348,7 +366,8 @@ static void netTask(void*) {
     if (wifi != S.wifiUp) {
       S.wifiUp = wifi;
       if (wifi) {
-        Serial.printf("[wifi] up %s rssi %d\n", WiFi.localIP().toString().c_str(), WiFi.RSSI());
+        Serial.printf("[wifi] up %s rssi %d, setup page http://%s/\n", WiFi.localIP().toString().c_str(), WiFi.RSSI(),
+                      WiFi.localIP().toString().c_str());
         nextAttempt = now;
       } else Serial.println("[wifi] down");
     }
@@ -456,6 +475,10 @@ void netBegin() {
                 FW_VER, pairing, settings.token[0] ? "set" : "not set", PROTO_VER, FW_SOT_VER,
                 n ? " (unsent cry alerts restored)" : "");
 
+  uint8_t mac[6];
+  esp_efuse_mac_get_default(mac);
+  snprintf(host, sizeof host, "xelulu-%02x%02x%02x", mac[3], mac[4], mac[5]);
+  WiFi.setHostname(host);               // before the first WiFi.mode(): DHCP shows this name
   if (settings.wifiSsid[0]) {
     WiFi.mode(WIFI_STA);
     WiFi.setSleep(false);               // modem sleep would eat the voice latency budget

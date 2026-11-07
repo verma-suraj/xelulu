@@ -1,5 +1,6 @@
 #include "Ota.h"
 #include "../net/Net.h"
+#include "../State.h"
 #include "esp_ota_ops.h"
 #include "esp_http_client.h"
 #include "esp_crt_bundle.h"
@@ -12,15 +13,34 @@
 bool verifyRollbackLater() { return true; }
 
 static bool pendingVerify = false;
-static volatile bool running = false;
+static volatile bool running = false, localBusy = false;
 static char cmdId[64], manifestUrl[256];
+
+// A Wi-Fi upload marks RTC memory, which survives its reboot into the new image. That image is
+// kept once Wi-Fi works (hello may never come: the stack can be off while someone uploads), and
+// rolls back on the next reset if it cannot even join Wi-Fi.
+#define LOCAL_MAGIC 0x10CA10CAu
+RTC_NOINIT_ATTR static uint32_t rtcLocal;
+static bool localImage = false;
 
 void otaBegin() {
   esp_ota_img_states_t st;
   if (esp_ota_get_state_partition(esp_ota_get_running_partition(), &st) == ESP_OK && st == ESP_OTA_IMG_PENDING_VERIFY) {
     pendingVerify = true;
-    Serial.println("[ota] new image: kept only if hello + status succeed before the next reset");
+    localImage = rtcLocal == LOCAL_MAGIC;
+    Serial.println(localImage ? "[ota] new image from a Wi-Fi upload: kept once Wi-Fi works, 30 s after boot"
+                              : "[ota] new image: kept only if hello + status succeed before the next reset");
   }
+  rtcLocal = 0;
+}
+
+void otaLocal(bool busy) {
+  rtcLocal = busy ? LOCAL_MAGIC : 0;
+  localBusy = busy;
+}
+
+void otaLocalCheck(uint32_t now) {
+  if (localImage && S.wifiUp && now > 30000) { localImage = false; otaMarkValid(); }
 }
 
 void otaMarkValid() {
@@ -30,7 +50,7 @@ void otaMarkValid() {
   Serial.println("[ota] image marked valid");
 }
 
-bool otaRunning() { return running; }
+bool otaRunning() { return running || localBusy; }
 
 static esp_http_client_handle_t httpOpen(const char* url, int64_t& len) {
   esp_http_client_config_t hc = {};
@@ -111,8 +131,9 @@ static void otaTask(void*) {
 }
 
 bool otaStart(const char* id, const char* url) {
-  if (running) return false;
+  if (running || localBusy) return false;
   running = true;
+  rtcLocal = 0;                         // this image comes from the cloud: hello + status decide
   strlcpy(cmdId, id, sizeof cmdId);
   strlcpy(manifestUrl, url, sizeof manifestUrl);
   xTaskCreatePinnedToCore(otaTask, "ota", 8192, nullptr, 3, nullptr, 0);

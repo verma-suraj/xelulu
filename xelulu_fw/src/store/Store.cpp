@@ -16,6 +16,47 @@ static void getStr(const char* key, char* dst, size_t n, const char* def) {
   else strlcpy(dst, def, n);
 }
 
+bool settingsServer(const char* mqtt, const char* audio) {
+  char m[sizeof settings.mqttUrl], a[sizeof settings.audioUrl];
+  if (!strstr(mqtt, "://")) {
+    if (!*mqtt) return false;
+    for (const char* p = mqtt; *p; p++) if (!isalnum((uint8_t)*p) && *p != '.' && *p != '-') return false;
+    if (snprintf(m, sizeof m, "mqtt://%s:1883", mqtt) >= (int)sizeof m) return false;
+    snprintf(a, sizeof a, "ws://%s:8081", mqtt);   // two characters shorter than m: fits
+  } else {
+    if ((strncmp(mqtt, "mqtt://", 7) && strncmp(mqtt, "mqtts://", 8)) || strlen(mqtt) >= sizeof m) return false;
+    if ((*audio && strncmp(audio, "ws://", 5) && strncmp(audio, "wss://", 6)) || strlen(audio) >= sizeof a) return false;
+    strcpy(m, mqtt);
+    strcpy(a, audio);                                // "" = no voice turns
+  }
+  strcpy(settings.mqttUrl, m);
+  strcpy(settings.audioUrl, a);
+  return true;
+}
+
+// Config.h's NET_* values are applied once per change (an FNV-1a of all five is kept in NVS): a reflash
+// with new values overwrites what the robot saved, the same build again keeps later console / web edits.
+static void applyNetDefaults() {
+  static_assert(sizeof NET_WIFI_SSID <= sizeof(Settings::wifiSsid), "Config.h NET_WIFI_SSID: 32 characters at most");
+  static_assert(sizeof NET_WIFI_PASS <= sizeof(Settings::wifiPass) - 1, "Config.h NET_WIFI_PASS: 63 characters at most");
+  static_assert(sizeof NET_DEVICE_ID <= sizeof(Settings::deviceId), "Config.h NET_DEVICE_ID: 39 characters at most");
+  static_assert(sizeof NET_DEVICE_TOKEN <= sizeof(Settings::token), "Config.h NET_DEVICE_TOKEN: 95 characters at most");
+  uint32_t h = 2166136261u;
+  for (const char* v : {NET_WIFI_SSID, NET_WIFI_PASS, NET_SERVER, NET_DEVICE_ID, NET_DEVICE_TOKEN})
+    for (const char* p = v;; p++) { h = (h ^ (uint8_t)*p) * 16777619u; if (!*p) break; }   // the NULs separate them
+  if (nvs.getULong("netdef", 0) == h) return;
+  if (NET_WIFI_SSID[0]) {
+    strlcpy(settings.wifiSsid, NET_WIFI_SSID, sizeof settings.wifiSsid);
+    strlcpy(settings.wifiPass, NET_WIFI_PASS, sizeof settings.wifiPass);
+  }
+  if (NET_SERVER[0] && !settingsServer(NET_SERVER, "")) Serial.println("[net] Config.h NET_SERVER is not a bare IP or host name: ignored");
+  if (NET_DEVICE_ID[0]) strlcpy(settings.deviceId, NET_DEVICE_ID, sizeof settings.deviceId);
+  if (NET_DEVICE_TOKEN[0]) strlcpy(settings.token, NET_DEVICE_TOKEN, sizeof settings.token);
+  settingsSave();
+  nvs.putULong("netdef", h);
+  Serial.println("[net] Config.h network values applied");
+}
+
 void storeBegin() {
   lock = xSemaphoreCreateMutex();
   nvs.begin("xlu", false);
@@ -35,6 +76,7 @@ void storeBegin() {
   getStr("child", settings.childId, sizeof settings.childId, "");
   settings.childSet = nvs.getBool("childset", false);
   settings.mode = nvs.getUChar("mode", 0);
+  applyNetDefaults();
 
   Cal stored;
   if (nvs.getBytesLength("cal") == sizeof(Cal) &&

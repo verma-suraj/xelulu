@@ -3,7 +3,7 @@
 // Built from Xelulu_Firmware_Source_of_Truth.md (FW-SOT v1.2) against
 // Document B v2 (proto_ver 2) and Document C v1.0, xelulu@79a92d0.
 //
-// Build: Arduino IDE 2.x / arduino-cli, core esp32 3.3.10
+// Build: Arduino IDE 2.x / arduino-cli, core esp32 3.3.10 (step by step: FLASHING.md)
 //   ESP32S3 Dev Module · Flash 16 MB · QIO 80 MHz · PSRAM: OPI ·
 //   USB CDC on boot: Enabled · USB mode: Hardware CDC and JTAG ·
 //   Partition scheme: Custom (partitions.csv in this folder)
@@ -12,6 +12,8 @@
 //   its shared User_Setup.h is left alone), ArduinoJson 7, VL53L0X (Pololu) 1.3.1,
 //   WebSockets (links2004) 2.7.2, libopus (pschatzmann/arduino-libopus @bae0f85).
 // Console: native USB, 115200. `help` lists every command (§14.3).
+// Network: Config.h NET_* (or the robot's setup hotspot / web page, net/Portal.cpp).
+// Updates over Wi-Fi: the Arduino IDE network port, or http://<robot IP>/update (user xelulu).
 //
 // Tasks (§3.3): audio_io c1/22 · body c1/21 · sense c0/17 · turn c0/15 · net c0/12 ·
 // housekeeping c0/5 · loopTask c1/1 (behaviour + face). Nothing in an ISR.
@@ -27,10 +29,29 @@
 #include "src/body/Body.h"
 #include "src/body/Power.h"
 #include "src/net/Net.h"
+#include "src/net/Portal.h"
 #include "src/ota/Ota.h"
 #include "src/behavior/Behavior.h"
 #include "src/console/Console.h"
 #include "esp_task_wdt.h"
+
+// The Arduino IDE ignores the FQBN above and builds with its Tools menu: a wrong menu stops here, naming the fix.
+// (Flash Size can only be checked on the robot: it prints and shows a warning when it is not 16MB.)
+#if ESP_ARDUINO_VERSION != ESP_ARDUINO_VERSION_VAL(3, 3, 10)
+#error "Tools > Board > Boards Manager: install esp32 by Espressif Systems version 3.3.10 (the version this firmware is tested on)"
+#endif
+#ifndef ARDUINO_ESP32S3_DEV
+#error "Tools > Board: ESP32S3 Dev Module"
+#endif
+#if !ARDUINO_USB_CDC_ON_BOOT || ARDUINO_USB_MODE != 1
+#error "Tools > USB CDC On Boot: Enabled, and Tools > USB Mode: Hardware CDC and JTAG"
+#endif
+#if !defined(BOARD_HAS_PSRAM) || !defined(CONFIG_SPIRAM_MODE_OCT)
+#error "Tools > PSRAM: OPI PSRAM"
+#endif
+#ifndef ARDUINO_PARTITION_
+#error "Tools > Partition Scheme: Custom (it uses partitions.csv from this folder)"
+#endif
 
 SET_LOOP_TASK_STACK_SIZE(16 * 1024);
 
@@ -64,6 +85,7 @@ void setup() {
   bodyBegin();                   // servo scan + 6.2 V check before any torque (§12 boot)
   netBegin();
   otaBegin();
+  portalBegin();                 // setup page + hotspot + OTA over Wi-Fi (net/Portal.cpp)
   powerBoot(netApproxBootEpoch());
   behaviorBegin();
   xTaskCreatePinnedToCore(housekeeping, "housekeeping", 4096, nullptr, 5, nullptr, 0);

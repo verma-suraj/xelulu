@@ -26,6 +26,9 @@ extern Cal cal;
 
 void storeBegin();
 void settingsSave();
+// "192.168.1.50" (a bare host) = mqtt://host:1883 + ws://host:8081, the local stack's ports;
+// otherwise mqtt(s):// + ws(s):// URLs as given. Writes settings only when valid; caller saves.
+bool settingsServer(const char* mqtt, const char* audio);
 
 void calSave();
 void calReset();

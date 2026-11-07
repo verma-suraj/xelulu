@@ -26,4 +26,6 @@ bool netNextCmd(Cmd& c);                        // accepted commands, behaviour 
 
 void        netStatus(Print& out);
 const char* netPairingCode();
+const char* netHost();                          // "xelulu-a1b2c3" from the MAC: hotspot, mDNS and DHCP name
+const char* netLinkName();                      // the broker link in a few words, for the face and the web page
 bool        netSelfTest(Print& out);            // `selftest wire`: the contract fixtures, on target
